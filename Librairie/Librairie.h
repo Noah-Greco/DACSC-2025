@@ -1,5 +1,5 @@
-#ifndef TCP_H
-#define TCP_H
+#ifndef Librairie.h
+#define Librairie.h
 #define TAILLE_MAX_DATA 10000
 //Appelés par le processus serveur --> Celui qui attent une connexion --> prends en parametre le port sur le quel le serveur attends et retourne le socket d'écoute
 int ServerSocket(int port);
