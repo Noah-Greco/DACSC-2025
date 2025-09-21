@@ -1,11 +1,49 @@
 #define TCP_H
 #define TAILLE_MAX_DATA 10000
+#include <sys/types.h>
+#include <sys/socket.h>
+
 int ServerSocket(int port) 
 {
+    int sckt_serveur;
  //Fait un appel à socket() pour créer la socket
+  sckt_serveur = socket(AF_INET , SOCK_STREAM , 0); //0 veut dire que l'os prendra le protocol adapté lui mm 
+  if(sckt == 0 )
+  {
+    perror("Erreur de socket()");
+    exit(1);
+  }
+   printf("socket creee = %d\n",sckt_serveur);
+
  //construit l’adresse réseau de la socket par appel à getaddrinfo()
+ struct addrinfo hints;
+ struct addrinfo *results;
+ memset(&hints,0,sizeof(struct addrinfo));
+ hints.ai_family = AF_INET;
+ hints.ai_socktype = SOCK_STREAM;
+ hints.ai_flags = AI_PASSIVE | AI_NUMERICSERV; // pour une connexion passive
+ if (getaddrinfo(NULL,"50000",&hints,&results) != 0)//null veut dire nimp quelle ip
+ {
+    close(sckt_serveur);
+    exit(1);
+ } 
  //fait appel à bind() pour lier la socket à l’adresse réseau
+ if (bind(sckt_serveur,results->ai_addr,results->ai_addrlen) < 0)
+ {
+    perror("Erreur de bind()");
+    exit(1);
+ }
+ freeaddrinfo(results);
+ printf("bind() reussi !\n");
+ pause();
+
  //fait appel à listen() pour démarrer la machine à états TCP
+ if(listen(sckt_serveur,500)== -1)
+ {
+     perror("Erreur de listen()");
+     exit(1);
+ }
+  printf("listen reussis");
 }
 int Accept(int sEcoute,char *ipClient)
 {
