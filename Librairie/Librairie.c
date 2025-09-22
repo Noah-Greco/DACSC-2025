@@ -79,14 +79,72 @@ int Accept(int sckt_serveur,char *ipClient)
 int ClientSocket(char* ipServeur,int portServeur)
 {
  //Fait appel à socket() pour créer la socket
- //construit l’adresse réseau de la socket (avec l’IP et le port du serveur) par appel à la fonction getaddrinfo()
+  int sckt_client;
+  sckt_client = socket(AF_INET , SOCK_STREAM , 0); 
+  if(sckt_client < 0 )
+  {
+    perror("Erreur de socket()");
+    exit(1);
+  }
+   printf("socket creee = %d\n",sckt_client);
+  //construit l’adresse réseau de la socket (avec l’IP et le port du serveur) par appel à la fonction getaddrinfo()
+  struct addrinfo hints;
+  struct addrinfo *results;
+  memset(&hints,0,sizeof(struct addrinfo));
+  hints.ai_family = AF_INET; //IPV4
+  hints.ai_socktype = SOCK_STREAM;//TCP
+  hints.ai_flags = AI_PASSIVE | AI_NUMERICSERV; // pour une connexion passive
+ if (getaddrinfo(ipServeur,portServeur,&hints,&results) != 0)//null veut dire nimp quelle ip
+ {
+    close(sckt_client);
+    exit(1);
+ } 
  //fait appel à connect() pour se connecter sur le serveur
+ if(socket(sckt_client,results->ai_addr,results->ai_addrlen)==-1)
+ {
+   perror("Erreur lors de la tentative de connect ()");
+   exit(1);
+ }
+ printf("connect() réussi !");
 }
 int Send(int sSocket,char* data,int taille)
 {
- //Envoie de donnée comme dans exemple du cours
+  int nb,tmp;
+  char buffer[200];
+  strcpy(buffer,data);
+  tmp = strlen(buffer);
+  buffer[tmp] = "##//##";
+  if ((nb = write(sSocket,buffer,taille)) == -1)
+  {
+  perror("Erreur de write()");  
+  close(sSocket);
+  }
+  printf("nbEcrits = %d\n",nb);
 }
 int Receive(int sSocket,char* data);
 {
- //Reception de donnée comme dans les exemple du cours 
-}
+ //Reception de donnée comme dans les exemple du 
+  int nb,compteur=0;
+  char buffer[200],chaine[200];
+  if ((nb = read(sClient,buffer,50)) == -1)
+ {
+  perror("Erreur de read()");
+  close(sClient);
+ }
+  while(compteur < lentgh(buffer))
+  {
+    if(buffer[compteur] == "#")
+    {
+      char tmp[7];
+      for(int i = 0;i<6;i++)
+      {
+        tmp[i]=buffer[compteur+i];
+      }
+      if(strcmp(tmp,"##//##")==0)
+      {
+        break;
+      }
+    
+    }
+      chaine[compteur] = buffer[compteur]
+  }
